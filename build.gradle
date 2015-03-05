@@ -1,3 +1,17 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+  
+  dependencies {
+    classpath 'nu.studer:gradle-plugindev-plugin:1.0.3'
+  }
+}
+
+plugins {
+  id 'nu.studer.plugindev' version '1.0.3'
+}
+
 apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'eclipse'
@@ -5,20 +19,20 @@ apply plugin: 'eclipse'
 description = 'Gradle SchemaSpy plugin'
 sourceCompatibility = 1.8
 group = 'com.tomtresansky.gradle.plugin.schemaspy'
-version = '0.1-SNAPSHOT'
+version = '0.1'
 
 repositories {
   mavenCentral()
 }
 
 dependencies {
-  def groovy = [group:'org.codehaus.groovy', name:'groovy-all', version:'2.3.7']
+  def groovy = [group:'org.codehaus.groovy', name:'groovy-all', version:'2.3.6']
   
   compile gradleApi()
   compile groovy
   
-  compile(group:'com.google.guava', name:'guava', version:'18.0')
-  compile('org.jumpmind.symmetric.schemaspy:schemaspy:5.0.0')
+  compile 'com.google.guava:guava:18.0'
+  compile 'org.jumpmind.symmetric.schemaspy:schemaspy:5.0.0'
 }
 
 eclipse {
@@ -39,8 +53,29 @@ eclipse {
 eclipse.classpath.file {
   // Closure executed after .classpath content is loaded from existing file and after gradle build information is merged
   whenMerged { classpath ->
-	classpath.entries.removeAll { entry -> 
-	  return (entry.kind == 'src' && entry.path == "/${eclipse.project.name}")
-	}
+  	classpath.entries.removeAll { entry -> 
+  	  return (entry.kind == 'src' && entry.path == "/${eclipse.project.name}")
+  	}
   }
+}
+
+plugindev {
+  pluginImplementationClass 'com.tomtresansky.gradle.plugin.schemaspy.SchemaSpyPlugin'
+  pluginDescription 'A plugin for Gradle to allow for running SchemaSpy as a part of the buildDashboard plugin.'
+  pluginLicenses 'Apache-2.0'
+  pluginTags 'gradle', 'plugin', 'schemaspy', 'buildDashboard', 'reporting', 'database'
+  authorId 'tresat'
+  authorName 'Thomas Tresansky'
+  authorEmail 'tom.tresansky@gmail.com'
+  projectUrl 'https://github.com/tresat/gradle-schemaspy-plugin'
+  projectInceptionYear '2015'
+  done() // do not omit this
+}
+
+bintray {
+  // These properties are defined in USER_HOME/.gradle/gradle.properties
+  user = "$BINTRAY_USER"
+  key = "$BINTRAY_API_KEY"
+  
+  pkg.repo = 'gradle-plugins'
 }

@@ -1,7 +1,9 @@
 # Gradle cache
 .gradle/
+build/
 
 # Eclipse files and folders
 .settings/
 .classpath
 .project
+bin/
