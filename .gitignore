@@ -1,0 +1,7 @@
+# Gradle cache
+.gradle/
+
+# Eclipse files and folders
+.settings/
+.classpath
+.project

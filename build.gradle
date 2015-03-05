@@ -1,0 +1,46 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'eclipse'
+
+description = 'Gradle SchemaSpy plugin'
+sourceCompatibility = 1.8
+group = 'com.tomtresansky.gradle.plugin.schemaspy'
+version = '0.1-SNAPSHOT'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  def groovy = [group:'org.codehaus.groovy', name:'groovy-all', version:'2.3.7']
+  
+  compile gradleApi()
+  compile groovy
+  
+  compile(group:'com.google.guava', name:'guava', version:'18.0')
+  compile('org.jumpmind.symmetric.schemaspy:schemaspy:5.0.0')
+}
+
+eclipse {
+  project {
+    name = 'Gradle-SchemaSpy-Plugin'
+    natures += 'org.springsource.ide.eclipse.gradle.core.nature'
+  }
+
+  classpath {
+    // Override default setting and download and associate Javadoc
+    downloadJavadoc = true
+  }
+}
+
+/*
+ * Remove 'default classpath' from generated build paths, else the project root becomes a source directory.
+ */
+eclipse.classpath.file {
+  // Closure executed after .classpath content is loaded from existing file and after gradle build information is merged
+  whenMerged { classpath ->
+	classpath.entries.removeAll { entry -> 
+	  return (entry.kind == 'src' && entry.path == "/${eclipse.project.name}")
+	}
+  }
+}

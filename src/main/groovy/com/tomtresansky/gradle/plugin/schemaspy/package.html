@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <title>package com.tomtresansky.gradle.plugin.schemaspy.*</title>
+  </head>
+  <body>
+    <p>Classes for loading data into the db.</p>
+    <p>Note most classes in this package can <strong>NOT</strong> be marked <code>final</code>, upon pain of:
+	  <pre>
+	  Caused by: org.gradle.api.GradleException: Could not generate a proxy class for class SchemaSpyExtension.
+	    at org.gradle.api.internal.AbstractClassGenerator.generateUnderLock(AbstractClassGenerator.java:204)
+	    at org.gradle.api.internal.AbstractClassGenerator.generate(AbstractClassGenerator.java:67)
+	    at org.gradle.api.internal.ClassGeneratorBackedInstantiator.newInstance(ClassGeneratorBackedInstantiator.java:36)
+	    at org.gradle.api.internal.plugins.DefaultConvention.create(DefaultConvention.java:106)
+	    at SchemaSpyPlugin.createExtension(C:\Users\Tom\Programming\Projects\DuelMaster\build.gradle:384)
+	    at SchemaSpyPlugin.apply(C:\Users\Tom\Programming\Projects\DuelMaster\build.gradle:373)
+	    at SchemaSpyPlugin.apply(C:\Users\Tom\Programming\Projects\DuelMaster\build.gradle)
+	    at org.gradle.api.internal.plugins.DefaultPluginContainer.providePlugin(DefaultPluginContainer.java:188)
+	    at org.gradle.api.internal.plugins.DefaultPluginContainer.addPluginInternal(DefaultPluginContainer.java:137)
+	    at org.gradle.api.internal.plugins.DefaultPluginContainer.apply(DefaultPluginContainer.java:107)
+	    at org.gradle.api.internal.plugins.DefaultObjectConfigurationAction.applyPlugin(DefaultObjectConfigurationAction.java:101)
+	    ... 41 more
+	  Caused by: java.lang.VerifyError: Cannot inherit from final class
+	    at org.gradle.internal.reflect.JavaMethod.invoke(JavaMethod.java:63)
+	    at org.gradle.api.internal.AsmBackedClassGenerator$ClassBuilderImpl.generate(AsmBackedClassGenerator.java:933)
+	    at org.gradle.api.internal.AbstractClassGenerator.generateUnderLock(AbstractClassGenerator.java:202)
+	    ... 51 more
+	  </pre>
+	</p>
+  </body>
+</html>
