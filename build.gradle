@@ -79,3 +79,5 @@ bintray {
   
   pkg.repo = 'gradle-plugins'
 }
+
+bintray.pkg.version.attributes = [ 'gradle-plugin': 'com.tomtresansky.schemaspy:com.tomtresansky.gradle.plugin.schemaspy:gradle-schemaspy-plugin' ]
