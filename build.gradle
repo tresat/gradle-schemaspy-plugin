@@ -20,7 +20,7 @@ apply plugin: 'eclipse'
 description = 'Gradle SchemaSpy plugin'
 sourceCompatibility = 1.7
 group = 'com.tomtresansky.gradle.plugin.schemaspy'
-version = '0.2'
+version = '0.2-java7'
 
 repositories {
   mavenCentral()
