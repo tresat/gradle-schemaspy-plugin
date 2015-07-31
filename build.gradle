@@ -18,7 +18,7 @@ apply plugin: 'maven'
 apply plugin: 'eclipse'
 
 description = 'Gradle SchemaSpy plugin'
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 group = 'com.tomtresansky.gradle.plugin.schemaspy'
 version = '0.2'
 
@@ -27,7 +27,7 @@ repositories {
 }
 
 dependencies {
-  def groovy = [group:'org.codehaus.groovy', name:'groovy-all', version:'2.3.9']
+  def groovy = [group:'org.codehaus.groovy', name:'groovy-all', version:'2.3.10']
   
   compile gradleApi()
   compile groovy
