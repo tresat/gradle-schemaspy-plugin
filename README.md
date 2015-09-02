@@ -70,6 +70,19 @@ gradle.taskGraph.whenReady { taskGraph ->
 buildDashboard.mustRunAfter schemaSpy
 ```
 
+## Release Notes
+
+### Version 0.3
+Defines report output directory.  This allows for clients to add a block like this:
+
+```groovy
+buildDashboard {
+  inputs.files schemaSpy.outputs.files
+}
+```
+
+in order to cause the SchemaSpy reporting plugin to cause the buildDashboard task to go out-of-date.
+
 ## Extras
 Included in the project is a `net.sourceforge.schemaspy.SchemaAnalyzer` implementation for [Apache Derby](http://db.apache.org/derby/) running in file system mode (no support for in-memory databases currently).
 

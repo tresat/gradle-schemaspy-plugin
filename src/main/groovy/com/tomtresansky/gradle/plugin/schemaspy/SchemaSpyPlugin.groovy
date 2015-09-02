@@ -25,18 +25,18 @@ class SchemaSpyPlugin extends ReportingBasePlugin {
   private static final String SCHEMA_SPY_TOOL_NAME = 'SchemaSpy'
   private static final String SCHEMA_SPY_TASK_NAME = 'schemaSpy'
   private static final String SCHEMA_SPY_REPORT_GROUP = 'db'
-  
+
   private ProjectInternal project
-  private SchemaSpyExtension extension 
-  
+  private SchemaSpyExtension extension
+
   String getToolName() {
     return SCHEMA_SPY_TOOL_NAME
   }
-  
+
   String getConfigurationName() {
     return toolName.toLowerCase()
   }
-  
+
   String getExtensionName() {
     return toolName.toLowerCase()
   }
@@ -44,24 +44,24 @@ class SchemaSpyPlugin extends ReportingBasePlugin {
   String getReportName() {
     return toolName.toLowerCase()
   }
-  
+
   String getReportGroupName() {
     return SCHEMA_SPY_REPORT_GROUP.toLowerCase()
   }
-   
+
   @Override
   void apply(ProjectInternal project) {
     Preconditions.checkNotNull(project, 'project can NOT be null!')
-    
+
     this.project = project
-        
+
     project.plugins.apply(ReportingBasePlugin)
-    
+
     createExtension()
     createConfiguration()
     createTask()
   }
-  
+
   /**
    * Sets up the project properties extension script block for SchemaSpy; with some default property values.
    *
@@ -69,12 +69,12 @@ class SchemaSpyPlugin extends ReportingBasePlugin {
    */
   private SchemaSpyExtension createExtension() {
     String relPath = "config/${extensionName}/schemaspy.properties"
-    
+
     File schemaSpyPropsFile = project.file(relPath)
     if (!schemaSpyPropsFile.exists()) {
       schemaSpyPropsFile = project.rootProject.file(relPath)
     }
-    
+
     extension = project.extensions.create(extensionName, SchemaSpyExtension, project)
     extension.with {
       toolVersion = "5.0.0"
@@ -84,7 +84,7 @@ class SchemaSpyPlugin extends ReportingBasePlugin {
 
     return extension
   }
-  
+
   /**
    * Create the 'schemaspy' configuration; add the SchemaSpy dependency to it.
    * <p>
@@ -97,47 +97,49 @@ class SchemaSpyPlugin extends ReportingBasePlugin {
       transitive = true
       description = "The ${toolName} libraries to be used for this project."
     }
-    
+
     def schemaspyConfiguration = project.configurations[configurationName]
     schemaspyConfiguration.dependencies.add(project.dependencies.create("org.jumpmind.symmetric.schemaspy:schemaspy:${extension.toolVersion}"))
-    
+
     return schemaspyConfiguration
   }
- 
+
   /**
    * Creates the task used to run SchemaSpy.
    * <p>
    * This task expects the SchemaSpy configuration and extension to be properly setup prior to calling.  See {@link #createExtension()} and {@link #createConfiguration()}.
-   * 
+   *
    * @return the new task
    */
   private SchemaSpyReportTask createTask() {
     final SchemaSpyReportTask schemaSpyTask = project.getTasks().create(SCHEMA_SPY_TASK_NAME, SchemaSpyReportTask.class)
-    
+
     schemaSpyTask.setDescription("Runs SchemaSpy against the specified db.")
     schemaSpyTask.setGroup("reporting")
-    
+
     schemaSpyTask.setMain('net.sourceforge.schemaspy.Main')
     schemaSpyTask.setClasspath(project.configurations.schemaspy)
-    
+
     schemaSpyTask.conventionMapping.with {
       config = { extension.config }
     }
 
+    def outputDir = new File(extension.reportsDir.absolutePath)
     schemaSpyTask.reports.all { report ->
       report.conventionMapping.with {
         enabled = true
         destination = {
-          new File(extension.reportsDir.absolutePath)
+          outputDir
         }
       }
     }
-    
+    schemaSpyTask.outputs.dir(outputDir)
+
     // Pull SchemaSpy command line args into the call to be made to java
     schemaSpyTask.doFirst {
       logging.captureStandardOutput(LogLevel.INFO)
       logging.captureStandardError(LogLevel.ERROR)
-      
+
       File schemaSpyPropsFile = project.file(getConfigFile())
       if (!schemaSpyPropsFile.exists()) {
         throw new TaskExecutionException(schemaSpyTask, new RuntimeException("schemaspy.properties file at ${schemaSpyPropsFile.absolutePath} does NOT exist!"))
@@ -145,9 +147,9 @@ class SchemaSpyPlugin extends ReportingBasePlugin {
       if (!schemaSpyPropsFile.canRead()) {
         throw new TaskExecutionException(schemaSpyTask, new RuntimeException("schemaspy.properties file at ${schemaSpyPropsFile.absolutePath} can NOT be read!"))
       }
-      
+
       List schemaSpyArgsList = []
-      
+
       def schemaSpyProps = new Properties()
       schemaSpyPropsFile.withInputStream { stream ->
         schemaSpyProps.load(stream)
@@ -155,12 +157,12 @@ class SchemaSpyPlugin extends ReportingBasePlugin {
       schemaSpyProps.each { String key, String value ->
         schemaSpyArgsList << "-$key" << value
       }
-      
+
       schemaSpyTask.setArgs(schemaSpyArgsList)
-      
+
       println "Running SchemaSpy with arguments: $schemaSpyArgsList"
     }
-    
+
     return schemaSpyTask
   }
 }

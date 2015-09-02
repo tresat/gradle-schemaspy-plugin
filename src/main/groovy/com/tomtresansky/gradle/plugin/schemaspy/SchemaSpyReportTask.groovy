@@ -42,7 +42,7 @@ class SchemaSpyReportTask extends JavaExec implements Reporting<SchemaSpyReportC
   SchemaSpyReportTask() {
     reports = instantiator.newInstance(DefaultSchemaSpyReportContainer, this)
 
-    // This task will never be considered up-to-date - who know what might have changed the db?
+    // This task will never be considered up-to-date - who knows what might have changed the db?
     outputs.upToDateWhen(new Spec<Task>() {
               public boolean isSatisfiedBy(Task element) {
                 return false
