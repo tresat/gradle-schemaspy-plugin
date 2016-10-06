@@ -27,7 +27,7 @@ repositories {
 }
 
 dependencies {
-  def groovy = [group:'org.codehaus.groovy', name:'groovy-all', version:'2.3.10']
+  def groovy = [group:'org.codehaus.groovy', name:'groovy-all', version:'2.4.7']
   
   compile gradleApi()
   compile groovy
@@ -58,6 +58,10 @@ eclipse.classpath.file {
   	  return (entry.kind == 'src' && entry.path == "/${eclipse.project.name}")
   	}
   }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.1'
 }
 
 pluginBundle {

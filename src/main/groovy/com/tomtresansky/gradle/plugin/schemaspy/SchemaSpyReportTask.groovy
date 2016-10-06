@@ -4,6 +4,7 @@ import static org.gradle.api.logging.LogLevel.*
 
 import javax.inject.Inject
 
+import org.gradle.api.Action;
 import org.gradle.api.Task
 import org.gradle.api.internal.project.IsolatedAntBuilder
 import org.gradle.api.reporting.Reporting
@@ -90,5 +91,11 @@ class SchemaSpyReportTask extends JavaExec implements Reporting<SchemaSpyReportC
   @Inject
   IsolatedAntBuilder getAntBuilder() {
     throw new UnsupportedOperationException()
+  }
+
+  @Override
+  public SchemaSpyReportContainer reports(Action<? super SchemaSpyReportContainer> arg0) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }
