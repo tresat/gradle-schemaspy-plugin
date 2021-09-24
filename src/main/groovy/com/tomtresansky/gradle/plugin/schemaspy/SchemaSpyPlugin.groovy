@@ -1,7 +1,7 @@
 package com.tomtresansky.gradle.plugin.schemaspy
 
+import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.internal.project.ProjectInternal
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.plugins.ReportingBasePlugin
 import org.gradle.api.reporting.ReportingExtension
@@ -26,7 +26,7 @@ class SchemaSpyPlugin extends ReportingBasePlugin {
   private static final String SCHEMA_SPY_TASK_NAME = 'schemaSpy'
   private static final String SCHEMA_SPY_REPORT_GROUP = 'db'
 
-  private ProjectInternal project
+  private Project project
   private SchemaSpyExtension extension
 
   String getToolName() {
@@ -49,7 +49,7 @@ class SchemaSpyPlugin extends ReportingBasePlugin {
     return SCHEMA_SPY_REPORT_GROUP.toLowerCase()
   }
 
-  void apply(ProjectInternal project) {
+  void apply(Project project) {
     Preconditions.checkNotNull(project, 'project can NOT be null!')
 
     this.project = project
