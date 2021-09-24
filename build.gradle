@@ -6,15 +6,15 @@ buildscript {
     
     jcenter()
   }
-  
-  dependencies {
-    classpath 'com.gradle.publish:plugin-publish-plugin:0.9.0'
-  }
 }
 
-apply plugin: 'com.gradle.plugin-publish'
+plugins {
+  id 'java-gradle-plugin'
+  id 'maven-publish'
+  id 'com.gradle.plugin-publish' version '0.14.0'
+}
+
 apply plugin: 'groovy'
-apply plugin: 'maven'
 apply plugin: 'eclipse'
 
 description = 'Gradle SchemaSpy plugin'
@@ -29,11 +29,11 @@ repositories {
 dependencies {
   def groovy = [group:'org.codehaus.groovy', name:'groovy-all', version:'2.3.10']
   
-  compile gradleApi()
-  compile groovy
-  
-  compile 'com.google.guava:guava:18.0'
-  compile 'org.jumpmind.symmetric.schemaspy:schemaspy:5.0.0'
+  implementation gradleApi()
+  implementation groovy
+
+  implementation 'com.google.guava:guava:18.0'
+  implementation 'org.jumpmind.symmetric.schemaspy:schemaspy:5.0.0'
 }
 
 eclipse {
@@ -63,7 +63,10 @@ eclipse.classpath.file {
 pluginBundle {
   website = 'https://github.com/tresat/gradle-schemaspy-plugin'
   vcsUrl = 'https://github.com/tresat/gradle-schemaspy-plugin'
+  tags = ['schemaspy', 'reporting', 'database']
+}
 
+gradlePlugin {
   // The plugins block can contain multiple plugin entries.
   //
   // The name for each plugin block below (greetingsPlugin, goodbyePlugin)
@@ -84,10 +87,11 @@ pluginBundle {
       id = 'com.tomtresansky.gradle.plugin.schemaspy'
       displayName = 'Gradle Schema Spy Plugin'
       description = 'A plugin for Gradle to allow for running SchemaSpy as a part of the buildDashboard plugin.'
-      tags = ['gradle', 'plugin', 'schemaspy', 'buildDashboard', 'reporting', 'database']
+      implementationClass = 'com.tomtresansky.gradle.plugin.schemaspy.SchemaSpyPlugin'
     }
   }
 
+  /*
   // Optional overrides for Maven coordinates.
   // If you have an existing plugin deployed to Bintray and would like to keep
   // your existing group ID and artifact ID for continuity, you can specify
@@ -102,4 +106,5 @@ pluginBundle {
     groupId = 'com.tomtresansky.gradle.plugin.schemaspy'
     artifactId = 'gradle-schemaspy-plugin'
   }
+   */
 }
