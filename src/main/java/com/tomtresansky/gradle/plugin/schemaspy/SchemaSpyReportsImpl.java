@@ -1,11 +1,15 @@
 package com.tomtresansky.gradle.plugin.schemaspy;
 
 import org.gradle.api.Task;
+import org.gradle.api.internal.CollectionCallbackActionDecorator;
 import org.gradle.api.reporting.DirectoryReport;
+import org.gradle.api.reporting.Report;
 import org.gradle.api.reporting.internal.TaskGeneratedSingleDirectoryReport;
 import org.gradle.api.reporting.internal.TaskReportContainer;
 
 import com.google.common.base.Preconditions;
+
+import javax.inject.Inject;
 
 /**
  * Concrete implementation of {@link SchemaSpyReportContainer} which represents
@@ -25,17 +29,17 @@ import com.google.common.base.Preconditions;
  *
  * @author Tom
  */
-public class DefaultSchemaSpyReportContainer extends TaskReportContainer<TaskGeneratedSingleDirectoryReport> implements SchemaSpyReportContainer {
+public abstract class SchemaSpyReportsImpl extends TaskReportContainer<TaskGeneratedSingleDirectoryReport> implements SchemaSpyReportContainer {
   /**
    * Constructor passes the {@link Task task} param on to the super-constructor, then adds a reference to
    * the <code>index.html</code> file produced by SchemaSpy to the reports collection.
    *
    * @param task the current instance of the task using this container (<em>may <strong>NOT</strong> be <code>null</code></em>)
+   * @param callbackActionDecorator additional configuration to be done on the task
    */
-  public DefaultSchemaSpyReportContainer(final Task task) {
-    super(TaskGeneratedSingleDirectoryReport.class, task);
-
-    Preconditions.checkNotNull(task, "task can NOT be null!");
+  @Inject
+  public SchemaSpyReportsImpl(Task task, CollectionCallbackActionDecorator callbackActionDecorator) {
+    super(TaskGeneratedSingleDirectoryReport.class, task, callbackActionDecorator);
 
     add(TaskGeneratedSingleDirectoryReport.class, "html", task, "index.html");
   }

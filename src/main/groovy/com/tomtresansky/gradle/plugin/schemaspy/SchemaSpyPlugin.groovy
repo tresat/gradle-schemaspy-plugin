@@ -49,7 +49,6 @@ class SchemaSpyPlugin extends ReportingBasePlugin {
     return SCHEMA_SPY_REPORT_GROUP.toLowerCase()
   }
 
-  @Override
   void apply(ProjectInternal project) {
     Preconditions.checkNotNull(project, 'project can NOT be null!')
 

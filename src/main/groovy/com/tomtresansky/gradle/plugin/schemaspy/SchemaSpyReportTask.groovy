@@ -1,5 +1,9 @@
 package com.tomtresansky.gradle.plugin.schemaspy
 
+import org.gradle.api.Action
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.tasks.InputFile
+
 import static org.gradle.api.logging.LogLevel.*
 
 import javax.inject.Inject
@@ -28,7 +32,7 @@ import com.google.common.base.Preconditions
  * @author Tom
  */
 class SchemaSpyReportTask extends JavaExec implements Reporting<SchemaSpyReportContainer>{
-  private final DefaultSchemaSpyReportContainer reports
+  private final SchemaSpyReportsImpl reports
 
   /**
    * The SchemaSpy configuration to use.
@@ -36,11 +40,8 @@ class SchemaSpyReportTask extends JavaExec implements Reporting<SchemaSpyReportC
   @Nested
   TextResource config
 
-  /**
-   * Constructor uses {@link #instantiator} to obtain an instance for {@link #reports}.
-   */
   SchemaSpyReportTask() {
-    reports = instantiator.newInstance(DefaultSchemaSpyReportContainer, this)
+    reports = getObjectFactory().newInstance(SchemaSpyReportsImpl.class, this);
 
     // This task will never be considered up-to-date - who knows what might have changed the db?
     outputs.upToDateWhen(new Spec<Task>() {
@@ -50,11 +51,17 @@ class SchemaSpyReportTask extends JavaExec implements Reporting<SchemaSpyReportC
             })
   }
 
+  @Inject
+  protected ObjectFactory getObjectFactory() {
+    throw new UnsupportedOperationException();
+  }
+
   /**
    * Getter for the SchemaSpy configuration file to use.
    *
    * @return File referencing the file specified by <code>config</code> property; or <code>null</code> if property not set
    */
+  @InputFile
   File getConfigFile() {
     getConfig()?.asFile()
   }
@@ -71,6 +78,7 @@ class SchemaSpyReportTask extends JavaExec implements Reporting<SchemaSpyReportC
   }
 
   @Override
+  @Nested
   SchemaSpyReportContainer getReports() {
     return reports
   }
@@ -80,6 +88,12 @@ class SchemaSpyReportTask extends JavaExec implements Reporting<SchemaSpyReportC
     Preconditions.checkNotNull(closure, 'closure can NOT be null!')
 
     return reports.configure(closure)
+  }
+
+  @Override
+  SchemaSpyReportContainer reports(Action<? super SchemaSpyReportContainer> configureAction) {
+    configureAction.execute(reports)
+    return reports
   }
 
   @Inject
