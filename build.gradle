@@ -41,3 +41,45 @@ gradlePlugin {
     }
   }
 }
+
+/***********************************************************************************************************************
+ *
+ * Testing setup - this can hopefully be greatly simplified with Gradle 7.3 and Test Suites.
+ *
+ ***********************************************************************************************************************/
+
+def integTestSourceSet = sourceSets.create("integTest")
+def funcTestSourceSet = sourceSets.create("funcTest")
+
+dependencies {
+  integTestImplementation(project)
+  funcTestImplementation(project)
+
+  testImplementation platform("org.spockframework:spock-bom:2.0-groovy-3.0")
+  integTestImplementation platform("org.spockframework:spock-bom:2.0-groovy-3.0")
+  funcTestImplementation platform("org.spockframework:spock-bom:2.0-groovy-3.0")
+}
+
+def integTestTask = tasks.register("integTest", Test) {
+  description = 'Runs the integration tests.'
+  group = "verification"
+  testClassesDirs = integTestSourceSet.output.classesDirs
+  classpath = integTestSourceSet.runtimeClasspath
+  mustRunAfter(tasks.named('test'))
+}
+def funcTestTask = tasks.register("funcTest", Test) {
+  description = 'Runs the functional tests.'
+  group = "verification"
+  testClassesDirs = integTestSourceSet.output.classesDirs
+  classpath = integTestSourceSet.runtimeClasspath
+  mustRunAfter(integTestTask)
+}
+
+tasks.named('check') {
+  dependsOn(integTestTask, funcTestTask)
+}
+
+tasks.withType(Test).configureEach {
+  // Using JUnitPlatform for running all types of tests
+  useJUnitPlatform()
+}
