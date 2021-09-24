@@ -116,7 +116,7 @@ class SchemaSpyPlugin extends ReportingBasePlugin {
     schemaSpyTask.setDescription("Runs SchemaSpy against the specified db.")
     schemaSpyTask.setGroup("reporting")
 
-    schemaSpyTask.setMain('net.sourceforge.schemaspy.Main')
+    schemaSpyTask.mainClass.set('net.sourceforge.schemaspy.Main')
     schemaSpyTask.setClasspath(project.configurations.schemaspy)
 
     schemaSpyTask.conventionMapping.with {
@@ -126,7 +126,7 @@ class SchemaSpyPlugin extends ReportingBasePlugin {
     def outputDir = new File(extension.reportsDir.absolutePath)
     schemaSpyTask.reports.all { report ->
       report.conventionMapping.with {
-        enabled = true
+        required = true
         destination = {
           outputDir
         }
