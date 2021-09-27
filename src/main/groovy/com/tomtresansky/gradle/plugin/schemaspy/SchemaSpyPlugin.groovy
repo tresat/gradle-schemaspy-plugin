@@ -23,7 +23,9 @@ import com.google.common.base.Preconditions
  */
 class SchemaSpyPlugin extends ReportingBasePlugin {
   private static final String SCHEMA_SPY_TOOL_NAME = 'SchemaSpy'
-  private static final String SCHEMA_SPY_TASK_NAME = 'schemaSpy'
+  public static final String SCHEMA_SPY_TASK_NAME = 'schemaSpy'
+  public static final String SCHEMA_SPY_TASK_DESCRIPTION = 'Runs SchemaSpy against the specified db.'
+  private static final String SCHEMA_SPY_TASK_GROUP = 'reporting'
   private static final String SCHEMA_SPY_REPORT_GROUP = 'db'
 
   private Project project
@@ -113,8 +115,8 @@ class SchemaSpyPlugin extends ReportingBasePlugin {
   private SchemaSpyReportTask createTask() {
     final SchemaSpyReportTask schemaSpyTask = project.getTasks().create(SCHEMA_SPY_TASK_NAME, SchemaSpyReportTask.class)
 
-    schemaSpyTask.setDescription("Runs SchemaSpy against the specified db.")
-    schemaSpyTask.setGroup("reporting")
+    schemaSpyTask.setDescription(SCHEMA_SPY_TASK_DESCRIPTION)
+    schemaSpyTask.setGroup(SCHEMA_SPY_TASK_GROUP)
 
     schemaSpyTask.mainClass.set('net.sourceforge.schemaspy.Main')
     schemaSpyTask.setClasspath(project.configurations.schemaspy)

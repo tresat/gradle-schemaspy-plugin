@@ -25,6 +25,58 @@ dependencies {
   implementation 'org.jumpmind.symmetric.schemaspy:schemaspy:5.0.0'
 }
 
+def integTestSourceSet = sourceSets.create("integTest")
+def funcTestSourceSet = sourceSets.create("funcTest")
+
+dependencies {
+  integTestImplementation(project)
+  funcTestImplementation(project)
+
+  testImplementation platform("org.spockframework:spock-bom:2.0-groovy-3.0")
+  integTestImplementation platform("org.spockframework:spock-bom:2.0-groovy-3.0")
+  funcTestImplementation platform("org.spockframework:spock-bom:2.0-groovy-3.0")
+
+  testImplementation 'org.spockframework:spock-core'
+  integTestImplementation 'org.spockframework:spock-core'
+  funcTestImplementation 'org.spockframework:spock-core'
+}
+
+/***********************************************************************************************************************
+ *
+ * Testing setup - this can hopefully be greatly simplified with Gradle 7.3 and Test Suites.
+ *
+ ***********************************************************************************************************************/
+
+def integTestTask = tasks.register("integTest", Test) {
+  description = 'Runs the integration tests.'
+  group = "verification"
+  testClassesDirs = integTestSourceSet.output.classesDirs
+  classpath = integTestSourceSet.runtimeClasspath
+  mustRunAfter(tasks.named('test'))
+}
+def funcTestTask = tasks.register("funcTest", Test) {
+  description = 'Runs the functional tests.'
+  group = "verification"
+  testClassesDirs = funcTestSourceSet.output.classesDirs
+  classpath = funcTestSourceSet.runtimeClasspath
+  mustRunAfter(integTestTask)
+}
+
+tasks.named('check') {
+  dependsOn(integTestTask, funcTestTask)
+}
+
+tasks.withType(Test).configureEach {
+  // Using JUnitPlatform for running all types of tests
+  useJUnitPlatform()
+}
+
+/***********************************************************************************************************************
+ *
+ * Plugin publishing setup
+ *
+ ***********************************************************************************************************************/
+
 pluginBundle {
   website = 'https://github.com/tresat/gradle-schemaspy-plugin'
   vcsUrl = 'https://github.com/tresat/gradle-schemaspy-plugin'
@@ -40,46 +92,6 @@ gradlePlugin {
       implementationClass = 'com.tomtresansky.gradle.plugin.schemaspy.SchemaSpyPlugin'
     }
   }
-}
 
-/***********************************************************************************************************************
- *
- * Testing setup - this can hopefully be greatly simplified with Gradle 7.3 and Test Suites.
- *
- ***********************************************************************************************************************/
-
-def integTestSourceSet = sourceSets.create("integTest")
-def funcTestSourceSet = sourceSets.create("funcTest")
-
-dependencies {
-  integTestImplementation(project)
-  funcTestImplementation(project)
-
-  testImplementation platform("org.spockframework:spock-bom:2.0-groovy-3.0")
-  integTestImplementation platform("org.spockframework:spock-bom:2.0-groovy-3.0")
-  funcTestImplementation platform("org.spockframework:spock-bom:2.0-groovy-3.0")
-}
-
-def integTestTask = tasks.register("integTest", Test) {
-  description = 'Runs the integration tests.'
-  group = "verification"
-  testClassesDirs = integTestSourceSet.output.classesDirs
-  classpath = integTestSourceSet.runtimeClasspath
-  mustRunAfter(tasks.named('test'))
-}
-def funcTestTask = tasks.register("funcTest", Test) {
-  description = 'Runs the functional tests.'
-  group = "verification"
-  testClassesDirs = integTestSourceSet.output.classesDirs
-  classpath = integTestSourceSet.runtimeClasspath
-  mustRunAfter(integTestTask)
-}
-
-tasks.named('check') {
-  dependsOn(integTestTask, funcTestTask)
-}
-
-tasks.withType(Test).configureEach {
-  // Using JUnitPlatform for running all types of tests
-  useJUnitPlatform()
+  testSourceSets(sourceSets.integTest, sourceSets.funcTest)
 }
